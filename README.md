@@ -70,6 +70,10 @@ mvn clean package
 `target/Elementalist.jar`. The Garrison API comes from JitPack
 ([garrison-api](https://github.com/kadika66/garrison-api)); this is also a working example of a Garrison addon.
 
+## Support
+
+Questions and bug reports: the [plugin support channel on Discord](https://discord.gg/ACMTFTz7Sq), or open an issue here.
+
 ## Licence
 
 MIT, see [LICENSE](LICENSE).
