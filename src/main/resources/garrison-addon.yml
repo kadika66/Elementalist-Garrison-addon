@@ -1,0 +1,4 @@
+name: Elementalist
+version: '${project.version}'
+author: Kad
+main: xyz.unbent.elementalist.ElementalistAddon
