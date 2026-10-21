@@ -1,6 +1,6 @@
 # Elementalist
 
-A free addon for **Garrison**, the town-guard plugin for Towny <!-- Kad: store link -->: a town guard that wields fire,
+A free addon for **Garrison**, the town-guard plugin for Towny ([BuiltByBit](https://builtbybit.com/resources/garrison-guards-for-towny.133397/)): a town guard that wields fire,
 water, earth or air, with two abilities per element. Written from scratch for mobs. MIT licensed.
 
 **Requires Garrison 1.0.0 or newer** (Garrison API 1.4.0+). Garrison is sold separately; this addon does nothing on its
@@ -8,7 +8,7 @@ own.
 
 ## Install
 
-1. Download `Elementalist.jar` <!-- Kad: releases / Modrinth / Spigot link --> and put it in
+1. Download `Elementalist.jar` from [Releases](https://github.com/kadika66/Elementalist-Garrison-addon/releases) and put it in
    `plugins/Garrison/addons/` (not `plugins/`).
 2. Add a guard type to `plugins/Garrison/garrison.yml`. Garrison's default file has this one commented out at the bottom
    of `types:`:
