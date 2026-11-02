@@ -53,9 +53,23 @@ public final class ElementalistSettings {
 		return config.getBoolean("ambient-particles");
 	}
 
-	/** A number from an ability's section, never negative. */
+	/**
+	 * A number from an ability's section, never negative. A server config.yml from before 1.1.0 has the old section
+	 * names (fire-blast, tremor...): a number set there is still used, unless the new section sets it too.
+	 */
 	public double get(Ability ability, String key) {
-		return Math.max(0, config.getDouble("abilities." + ability.key() + "." + key));
+		String path = "abilities." + ability.key() + "." + key;
+		if (!config.isSet(path) && ability.legacyKey() != null) {
+			String legacy = "abilities." + ability.legacyKey() + "." + key;
+			if (config.isSet(legacy))
+				return Math.max(0, config.getDouble(legacy));
+		}
+		return Math.max(0, config.getDouble(path));
+	}
+
+	/** A number from the mastery section (the paths that strengthen the base abilities), never negative. */
+	public double mastery(String key) {
+		return Math.max(0, config.getDouble("mastery." + key));
 	}
 
 	public long cooldownMillis(Ability ability) {

@@ -5,7 +5,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Transformation;
@@ -72,6 +74,29 @@ public final class Casts {
 		return rock;
 	}
 
+	/** A floating item (a thrown blade, a rose). Not saved with the chunk; removed by {@link #remove} or on disable. */
+	public ItemDisplay spawnItem(Location at, Material material) {
+		ItemDisplay item = at.getWorld().spawn(at, ItemDisplay.class, display -> {
+			display.setPersistent(false);
+			display.addScoreboardTag(ROCK_TAG);
+			display.setItemStack(new ItemStack(material));
+			display.setTeleportDuration(1);
+			display.setInterpolationDuration(1);
+		});
+		displays.add(item);
+		return item;
+	}
+
+	/** Spins a display a little about its vertical axis; called once a tick while it flies. */
+	public static void spin(Entity display, float radians) {
+		if (!(display instanceof org.bukkit.entity.Display shown) || !display.isValid())
+			return;
+		Transformation now = shown.getTransformation();
+		org.joml.Quaternionf turned = new org.joml.Quaternionf(now.getLeftRotation()).rotateZ(radians);
+		shown.setInterpolationDelay(0);
+		shown.setTransformation(new Transformation(now.getTranslation(), turned, now.getScale(), now.getRightRotation()));
+	}
+
 	public void remove(Entity display) {
 		displays.remove(display);
 		display.remove();
@@ -85,6 +110,35 @@ public final class Casts {
 		if (damage <= 0)
 			return garrison.isEnemy(guard, target);
 		return garrison.damage(guard, target, damage);
+	}
+
+	/* Training (the town's skill tree; see training-tree.yml) */
+
+	/** Whether the guard's town has trained this unlock (id without the {@code elementalist:} prefix). */
+	public boolean has(Guard guard, String unlock) {
+		return garrison.hasUnlock(guard, "elementalist:" + unlock);
+	}
+
+	/**
+	 * How hard this guard hits with this ability, as a multiplier: its element's attunement, and on the base abilities
+	 * the element's mastery bonus.
+	 */
+	public double power(Guard guard, Ability ability) {
+		Element element = Element.of(ability);
+		double power = garrison.getTrained(guard, "elementalist:" + element.key() + "-damage", 1.0);
+		if (ability.isBase() && has(guard, element.masteryUnlock()))
+			power *= 1 + settings.mastery("damage-bonus");
+		return Math.max(0, power);
+	}
+
+	/** An ability's range after the guard's training. */
+	public double reach(Guard guard, double range) {
+		return range * Math.max(0.1, garrison.getTrained(guard, "elementalist:range", 1.0));
+	}
+
+	/** Cooldowns after the guard's training, as a multiplier (never under a fifth). */
+	public double cooldownScale(Guard guard) {
+		return Math.max(0.2, garrison.getTrained(guard, "elementalist:cooldown", 1.0));
 	}
 
 	/** Addon disabled: stop every ability mid-flight and take every rock away. */

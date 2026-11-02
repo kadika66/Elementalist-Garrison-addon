@@ -27,12 +27,19 @@ final class ElementButton implements MenuButton {
 		ItemStack icon = new ItemStack(element.icon());
 		icon.editMeta(meta -> {
 			meta.displayName(plain(Component.text("Element: ", NamedTextColor.GRAY).append(Component.text(element.display(), element.colour()))));
-			meta.lore(List.of(
-				ability(element.ranged(), element),
-				ability(element.close(), element),
-				Component.empty(),
-				plain(Component.text("Left-click: next element", NamedTextColor.DARK_GRAY)),
-				plain(Component.text("Right-click: previous element", NamedTextColor.DARK_GRAY))));
+			List<Component> lore = new java.util.ArrayList<>();
+			lore.add(ability(element.ranged(), element));
+			lore.add(ability(element.close(), element));
+			// What the town's training adds for this element.
+			Ability path = behaviour.pathAbility(guard, element);
+			if (path != null)
+				lore.add(ability(path, element));
+			else if (behaviour.hasMastery(guard, element))
+				lore.add(plain(Component.text("Mastery: ", element.colour()).append(Component.text("both abilities hit harder", NamedTextColor.GRAY))));
+			lore.add(Component.empty());
+			lore.add(plain(Component.text("Left-click: next element", NamedTextColor.DARK_GRAY)));
+			lore.add(plain(Component.text("Right-click: previous element", NamedTextColor.DARK_GRAY)));
+			meta.lore(lore);
 		});
 		return icon;
 	}

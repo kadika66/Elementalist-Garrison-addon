@@ -6,12 +6,14 @@ import xyz.unbent.garrison.api.addon.GarrisonAddon;
 
 /**
  * Elementalist, a Garrison addon: registers {@code behaviour: elementalist}. Goes in plugins/Garrison/addons/.
- * Needs Garrison API 1.4.0 or later (menu buttons, guard data, guard damage).
+ * Needs Garrison API 1.5.0 or later (menu buttons, guard data, guard damage, training). With API 1.6.0 (Garrison
+ * 1.0.1) it also brings its own training tree (training-tree.yml); on older Garrison the guards simply can't be trained.
  */
 public final class ElementalistAddon implements GarrisonAddon {
 
 	public static final String BEHAVIOUR_ID = "elementalist";
-	private static final String MIN_API = "1.4.0";
+	private static final String MIN_API = "1.5.0";
+	private static final String TREE_API = "1.6.0";
 
 	private Casts casts;
 
@@ -24,6 +26,27 @@ public final class ElementalistAddon implements GarrisonAddon {
 		casts = new Casts(context.getPlugin(), context.getGarrison(), settings);
 		context.getGarrison().registerBehaviour(context.getPlugin(), BEHAVIOUR_ID, new ElementalistBehaviour(casts));
 		context.getLogger().info("Registered behaviour '" + BEHAVIOUR_ID + "'. Give a guard type 'behaviour: " + BEHAVIOUR_ID + "' in garrison.yml.");
+		registerTree(context, api);
+	}
+
+	/** The default skill tree for Elementalist guard types. A server owner's own tree in training.yml wins. */
+	private static void registerTree(AddonContext context, String api) {
+		if (compare(api, TREE_API) < 0) {
+			context.getLogger().info("Garrison API " + api + " can't take an addon's training tree (needs " + TREE_API
+				+ ", Garrison 1.0.1). Elementalists work, but have nothing to train until Garrison is updated.");
+			return;
+		}
+		try (java.io.InputStream in = context.getResource("training-tree.yml")) {
+			if (in == null) {
+				context.getLogger().severe("training-tree.yml is missing from the jar; Elementalists have nothing to train.");
+				return;
+			}
+			org.bukkit.configuration.file.YamlConfiguration tree = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(
+				new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8));
+			context.getGarrison().registerTrainingTree(context.getPlugin(), BEHAVIOUR_ID, tree);
+		} catch (java.io.IOException e) {
+			context.getLogger().severe("Could not read training-tree.yml: " + e.getMessage());
+		}
 	}
 
 	@Override

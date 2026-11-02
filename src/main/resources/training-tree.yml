@@ -1,0 +1,214 @@
+# The Elementalist's default skill tree, handed to Garrison when the addon loads (Garrison 1.0.1+).
+# It's used for every guard type with 'behaviour: elementalist' that has no tree of its own in Garrison's
+# training.yml. To change it, copy everything below into training.yml under trees.<your type id>: and edit it there.
+#
+# One tree for all four elements: each guard only uses the nodes for its own element (and the shared ones).
+# Tiers 4, 5 and 6 are the three paths of each element, side by side in the menu (one row per element). They all
+# open at the same point (Garrison's tier-requirements: anything past tier 4 needs what tier 4 needs), and each
+# element's three paths exclude each other: pick one per element.
+#
+# Settings read by the addon (multipliers, base 1.0): elementalist:cooldown, elementalist:range,
+# elementalist:fire-damage, elementalist:water-damage, elementalist:earth-damage, elementalist:air-damage.
+# Unlocks: elementalist:<element>-<path>, see the path nodes.
+
+# Tier 1: every element
+hardened:
+  name: 'Hardened'
+  tier: 1
+  ranks: 3
+  cost: 1
+  icon: IRON_CHESTPLATE
+  effects:
+    - { stat: max_health, add: 2 }
+focus:
+  name: 'Focus'
+  description: 'Abilities come back 8% sooner per rank.'
+  tier: 1
+  ranks: 2
+  cost: 1
+  icon: CLOCK
+  effects:
+    - { setting: 'elementalist:cooldown', multiply: -0.08 }
+
+# Tier 2: every element
+reach:
+  name: 'Reach'
+  description: 'Aimed abilities fly 10% further per rank.'
+  tier: 2
+  ranks: 2
+  cost: 1
+  icon: SPYGLASS
+  effects:
+    - { setting: 'elementalist:range', multiply: 0.1 }
+composure:
+  name: 'Composure'
+  tier: 2
+  ranks: 2
+  cost: 1
+  icon: ANVIL
+  effects:
+    - { stat: knockback_resistance, add: 0.1 }
+
+# Tier 3: one per element (rows: fire, water, earth, air)
+fire-attunement:
+  name: 'Fire Attunement'
+  description: 'Fire abilities hit 12% harder per rank.'
+  tier: 3
+  ranks: 2
+  cost: 1
+  icon: BLAZE_POWDER
+  effects:
+    - { setting: 'elementalist:fire-damage', multiply: 0.12 }
+water-attunement:
+  name: 'Water Attunement'
+  description: 'Water abilities hit 12% harder per rank.'
+  tier: 3
+  ranks: 2
+  cost: 1
+  icon: HEART_OF_THE_SEA
+  effects:
+    - { setting: 'elementalist:water-damage', multiply: 0.12 }
+earth-attunement:
+  name: 'Earth Attunement'
+  description: 'Earth abilities hit 12% harder per rank.'
+  tier: 3
+  ranks: 2
+  cost: 1
+  icon: MOSSY_COBBLESTONE
+  effects:
+    - { setting: 'elementalist:earth-damage', multiply: 0.12 }
+air-attunement:
+  name: 'Air Attunement'
+  description: 'Air abilities hit 12% harder per rank.'
+  tier: 3
+  ranks: 2
+  cost: 1
+  icon: FEATHER
+  effects:
+    - { setting: 'elementalist:air-damage', multiply: 0.12 }
+
+# Tier 4: the mastery path of each element
+blue-flame:
+  name: 'Blue Flame'
+  description: 'Cinder Shot and Searing Arc burn blue and hit 25% harder.'
+  tier: 4
+  ranks: 1
+  cost: 3
+  icon: SOUL_TORCH
+  excludes: [storm, ash]
+  effects:
+    - { unlock: 'elementalist:fire-blue' }
+tide:
+  name: 'Tide'
+  description: 'Tide Lash and Frostbloom hit 25% harder, and Tide Lash lashes a second enemy too.'
+  tier: 4
+  ranks: 1
+  cost: 3
+  icon: PRISMARINE_SHARD
+  excludes: [ice, bloom]
+  effects:
+    - { unlock: 'elementalist:water-tide' }
+stone:
+  name: 'Stone'
+  description: 'Stoneshot and Quake Stomp hit 25% harder, and Stoneshot throws a second stone at a second enemy.'
+  tier: 4
+  ranks: 1
+  cost: 3
+  icon: COBBLESTONE
+  excludes: [iron, magma]
+  effects:
+    - { unlock: 'elementalist:earth-stone' }
+tempest:
+  name: 'Tempest'
+  description: 'Razor Wind and Gale Shove hit 25% harder, and Razor Wind fans out two more blades.'
+  tier: 4
+  ranks: 1
+  cost: 3
+  icon: WIND_CHARGE
+  excludes: [cyclone, vacuum]
+  effects:
+    - { unlock: 'elementalist:air-tempest' }
+
+# Tier 5: the second path of each element
+storm:
+  name: 'Storm'
+  description: 'Chain Spark: a spark that jumps between up to three enemies.'
+  tier: 5
+  ranks: 1
+  cost: 3
+  icon: LIGHTNING_ROD
+  excludes: [blue-flame, ash]
+  effects:
+    - { unlock: 'elementalist:fire-storm' }
+ice:
+  name: 'Ice'
+  description: 'Ice Lance: a block of ice that hits hard and slows.'
+  tier: 5
+  ranks: 1
+  cost: 3
+  icon: ICE
+  excludes: [tide, bloom]
+  effects:
+    - { unlock: 'elementalist:water-ice' }
+iron:
+  name: 'Iron'
+  description: 'Returning Blade: an iron blade thrown out and back, cutting enemies both ways.'
+  tier: 5
+  ranks: 1
+  cost: 3
+  icon: IRON_SWORD
+  excludes: [stone, magma]
+  effects:
+    - { unlock: 'elementalist:earth-iron' }
+cyclone:
+  name: 'Cyclone'
+  description: 'Cyclone: lifts an enemy high and drops it.'
+  tier: 5
+  ranks: 1
+  cost: 3
+  icon: STRING
+  excludes: [tempest, vacuum]
+  effects:
+    - { unlock: 'elementalist:air-cyclone' }
+
+# Tier 6: the third path of each element
+ash:
+  name: 'Ash'
+  description: 'Ash Lance: a smoke beam that bursts on impact, hurting enemies around it.'
+  tier: 6
+  ranks: 1
+  cost: 3
+  icon: CAMPFIRE
+  excludes: [blue-flame, storm]
+  effects:
+    - { unlock: 'elementalist:fire-ash' }
+bloom:
+  name: 'Bloom'
+  description: 'Rose Razor: a spinning rose flung like a blade.'
+  tier: 6
+  ranks: 1
+  cost: 3
+  icon: POPPY
+  excludes: [tide, ice]
+  effects:
+    - { unlock: 'elementalist:water-bloom' }
+magma:
+  name: 'Magma'
+  description: 'Molten Ring: a ring of molten drips around an enemy that burns everyone inside.'
+  tier: 6
+  ranks: 1
+  cost: 3
+  icon: MAGMA_BLOCK
+  excludes: [stone, iron]
+  effects:
+    - { unlock: 'elementalist:earth-magma' }
+vacuum:
+  name: 'Vacuum'
+  description: 'Vacuum Snare: drags the enemies around its target together and slows them.'
+  tier: 6
+  ranks: 1
+  cost: 3
+  icon: PHANTOM_MEMBRANE
+  excludes: [tempest, cyclone]
+  effects:
+    - { unlock: 'elementalist:air-vacuum' }

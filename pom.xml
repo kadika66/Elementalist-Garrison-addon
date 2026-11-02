@@ -7,7 +7,7 @@
        be released and licensed on its own. Written from scratch: no ProjectKorra code. -->
   <groupId>xyz.unbent</groupId>
   <artifactId>garrison-elementalist</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <packaging>jar</packaging>
   <name>Elementalist</name>
 
@@ -15,7 +15,7 @@
     <java.version>21</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- The public Garrison API, built by JitPack from github.com/kadika66/garrison-api. -->
-    <garrison.version>1.0.0</garrison.version>
+    <garrison.version>1.0.1</garrison.version>
     <paper.version>1.21.8-R0.1-SNAPSHOT</paper.version>
     <towny.version>0.102.0.10</towny.version>
   </properties>

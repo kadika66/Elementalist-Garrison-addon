@@ -24,15 +24,23 @@ default-element: random
 ambient-particles: true
 
 abilities:
+  # Sections were renamed in 1.1.0 (fire-blast -> cinder-shot, heat-wave -> searing-arc, earth-blast -> stoneshot,
+  # tremor -> quake-stomp, air-blast -> gale-shove, air-swipe -> razor-wind, water-whip -> tide-lash,
+  # frost -> frostbloom). A config.yml that still has the old sections keeps working: their numbers are used until
+  # you rename them.
+  #
+  # Damage and range below are before the town's training (see training-tree.yml): attunement and mastery raise
+  # damage, Reach raises range, Focus shortens cooldowns.
+
   # FIRE: a ranged burst that sets its target alight (the target burns; blocks never do).
-  fire-blast:
+  cinder-shot:
     damage: 6
     cooldown-seconds: 3
     range: 20
     speed: 1.2
     burn-seconds: 3
   # FIRE: a short cone of flame at enemies close in front.
-  heat-wave:
+  searing-arc:
     damage: 4
     cooldown-seconds: 6
     range: 5
@@ -40,14 +48,14 @@ abilities:
     burn-seconds: 2
 
   # EARTH: a thrown rock that knocks its target back.
-  earth-blast:
+  stoneshot:
     damage: 5
     cooldown-seconds: 4
     range: 16
     speed: 1.0
     knockback: 1.2
   # EARTH: a ground slam that stuns, then slows, every enemy nearby.
-  tremor:
+  quake-stomp:
     damage: 3
     cooldown-seconds: 8
     radius: 4
@@ -55,14 +63,14 @@ abilities:
     slow-seconds: 3
 
   # AIR: a strong push that shoves an enemy away (and out of town, with luck).
-  air-blast:
+  gale-shove:
     damage: 2
     cooldown-seconds: 5
     range: 8
     speed: 1.6
     knockback: 2.2
   # AIR: a fast fan of light cuts, for harassing at range.
-  air-swipe:
+  razor-wind:
     damage: 2
     cooldown-seconds: 2.5
     range: 14
@@ -71,7 +79,7 @@ abilities:
     spread: 12
 
   # WATER: a ranged lash that pulls its target in.
-  water-whip:
+  tide-lash:
     damage: 4
     cooldown-seconds: 4
     range: 14
@@ -79,9 +87,89 @@ abilities:
     pull: 0.9
   # WATER: a burst of cold that slows nearby enemies and heals the Elementalist and the
   # town's other guards around it.
-  frost:
+  frostbloom:
     damage: 1
     cooldown-seconds: 10
     radius: 6
     slow-seconds: 4
     heal: 3
+
+  # ---- Path abilities: only for guards whose town trained that path (training-tree.yml). ----
+  # A path ability is tried first, whenever it's ready and the enemy is in its range.
+
+  # FIRE, Storm path: a spark that jumps to the nearest other enemy, up to 'targets' enemies in all.
+  # Each jump does 'falloff' times the damage of the one before. Particles only: never a real lightning bolt.
+  chain-spark:
+    damage: 5
+    cooldown-seconds: 7
+    range: 16
+    targets: 3
+    jump-range: 6
+    falloff: 0.75
+  # FIRE, Ash path: an instant smoke beam. Where it stops (an enemy or a wall) it bursts: 'damage' to the enemy it
+  # hit, 'burst-damage' to every other enemy within 'burst-radius'. Never a real explosion: no blocks, no friends hurt.
+  ash-lance:
+    damage: 4
+    cooldown-seconds: 9
+    range: 18
+    burst-radius: 3
+    burst-damage: 4
+
+  # EARTH, Iron path: an iron blade (a display, never a real item) thrown out to the target and back. It cuts every
+  # enemy it passes, once on the way out and once on the way back.
+  returning-blade:
+    damage: 6
+    cooldown-seconds: 7
+    range: 14
+    speed: 0.9
+  # EARTH, Magma path: a ring of molten drips around the target for 'seconds'. Once a second, every enemy inside
+  # 'radius' is hurt and set alight. Particles only: no lava is ever placed.
+  molten-ring:
+    damage: 2
+    cooldown-seconds: 10
+    range: 14
+    radius: 3
+    seconds: 3
+    burn-seconds: 2
+
+  # AIR, Cyclone path: wind whirls around the target for 'windup-seconds', then throws it straight up. The fall
+  # does the rest (and hurts undead too).
+  cyclone:
+    damage: 2
+    cooldown-seconds: 10
+    range: 12
+    windup-seconds: 0.75
+    lift: 1.2
+  # AIR, Vacuum path: every enemy within 'radius' of the target is dragged in towards it and slowed.
+  vacuum-snare:
+    damage: 2
+    cooldown-seconds: 10
+    range: 14
+    radius: 5
+    pull: 0.9
+    slow-seconds: 2
+
+  # WATER, Ice path: a block of ice (a display) that hits hard and slows (Slowness 'slow-level').
+  ice-lance:
+    damage: 6
+    cooldown-seconds: 7
+    range: 16
+    speed: 1.2
+    slow-seconds: 3
+    slow-level: 2
+  # WATER, Bloom path: Rose Razor. The water drawn out of a rose, and the rose flung spinning like a blade.
+  rose-razor:
+    damage: 7
+    cooldown-seconds: 6
+    range: 18
+    speed: 1.6
+
+# The mastery paths (Blue Flame, Tide, Stone, Tempest): the element's two base abilities get stronger instead of
+# adding a third.
+mastery:
+  # How much harder the two base abilities hit (0.25 = 25%).
+  damage-bonus: 0.25
+  # Tide and Stone: the second lash or stone goes at the nearest other enemy within this many blocks.
+  second-target-range: 10
+  # Tempest: extra blades in Razor Wind's fan.
+  extra-blades: 2

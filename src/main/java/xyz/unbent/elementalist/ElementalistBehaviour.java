@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xyz.unbent.garrison.api.behaviour.GuardBehaviour;
 import xyz.unbent.garrison.api.guard.Guard;
 import xyz.unbent.garrison.api.menu.MenuButton;
@@ -19,8 +20,9 @@ import java.util.UUID;
 
 /**
  * {@code behaviour: elementalist}. Garrison picks the target and moves the guard as for any fighter; once a second
- * this decides whether to cast: the element's close-range ability if the enemy is near enough, otherwise its ranged
- * one, each on its own cooldown. The mob's own melee attack still works when it gets close.
+ * this decides whether to cast: the path ability its town trained for this element (if any, and in reach), else the
+ * element's close-range ability if the enemy is near enough, else its ranged one, each on its own cooldown. The
+ * mob's own melee attack still works when it gets close.
  *
  * The element is saved on the guard ({@link #ELEMENT_KEY}), so it survives restarts and a fallen guard returning.
  */
@@ -77,9 +79,26 @@ public final class ElementalistBehaviour implements GuardBehaviour {
 			|| !target.getWorld().equals(mob.getWorld()) || !casts.garrison().isEnemy(guard, target))
 			return;
 		double distance = mob.getEyeLocation().distance(target.getEyeLocation());
+		Ability path = pathAbility(guard, element);
+		if (path != null && tryCast(path, guard, mob, target, distance))
+			return;
 		if (tryCast(element.close(), guard, mob, target, distance))
 			return;
 		tryCast(element.ranged(), guard, mob, target, distance);
+	}
+
+	/** Whether the guard's town trained this element's mastery path. */
+	boolean hasMastery(Guard guard, Element element) {
+		return casts.has(guard, element.masteryUnlock());
+	}
+
+	/** The path ability the guard's town trained for this element, or null (no path, or the mastery path). */
+	@Nullable
+	Ability pathAbility(Guard guard, Element element) {
+		for (java.util.Map.Entry<String, Ability> path : element.paths().entrySet())
+			if (casts.has(guard, path.getKey()))
+				return path.getValue();
+		return null;
 	}
 
 	@Override
@@ -95,29 +114,25 @@ public final class ElementalistBehaviour implements GuardBehaviour {
 	/* Casting */
 
 	private boolean tryCast(Ability ability, Guard guard, Mob mob, LivingEntity target, double distance) {
-		if (distance > reach(ability))
+		if (distance > reach(guard, ability))
 			return false;
 		long now = System.currentTimeMillis();
 		Map<Ability, Long> cooldowns = readyAt.computeIfAbsent(guard.getId(), id -> new EnumMap<>(Ability.class));
 		if (cooldowns.getOrDefault(ability, 0L) > now)
 			return false;
 		// Area abilities around the guard don't need sight of the target; aimed ones do.
-		boolean aimed = ability != Ability.TREMOR && ability != Ability.FROST;
-		if (aimed && !mob.hasLineOfSight(target))
+		if (!ability.isArea() && !mob.hasLineOfSight(target))
 			return false;
 		if (!Abilities.cast(ability, casts, guard, mob, target))
 			return false;
-		cooldowns.put(ability, now + casts.settings().cooldownMillis(ability));
+		cooldowns.put(ability, now + (long) (casts.settings().cooldownMillis(ability) * casts.cooldownScale(guard)));
 		return true;
 	}
 
-	/** How close the target must be to use this ability. */
-	private double reach(Ability ability) {
-		ElementalistSettings s = casts.settings();
-		return switch (ability) {
-			case TREMOR, FROST -> s.get(ability, "radius");
-			default -> s.get(ability, "range");
-		};
+	/** How close the target must be to use this ability: its radius (area abilities) or its trained range. */
+	private double reach(Guard guard, Ability ability) {
+		double reach = casts.settings().get(ability, ability.reachKey());
+		return ability.isArea() ? reach : casts.reach(guard, reach);
 	}
 
 	private static void ambient(Mob mob, Element element, int count) {

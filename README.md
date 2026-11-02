@@ -1,9 +1,9 @@
 # Elementalist
 
 A free addon for **Garrison**, the town-guard plugin for Towny ([BuiltByBit](https://builtbybit.com/resources/garrison-guards-for-towny.133397/)): a town guard that wields fire,
-water, earth or air, with two abilities per element. Written from scratch for mobs. MIT licensed.
+water, earth or air, with two abilities per element and three trainable paths each. Written from scratch for mobs. MIT licensed.
 
-**Requires Garrison 1.0.0 or newer** (Garrison API 1.4.0+). Garrison is sold separately; this addon does nothing on its
+**Requires Garrison 1.0.0 or newer** (Garrison API 1.5.0+); the skill tree needs Garrison 1.0.1. Garrison is sold separately; this addon does nothing on its
 own.
 
 ## Install
@@ -45,13 +45,39 @@ New Elementalists start with `default-element` (random by default). The element 
 
 | Element | Ranged | Close |
 |---|---|---|
-| Fire | Fire Blast: burst, sets target alight | Heat Wave: cone of flame (5 blocks) |
-| Water | Water Whip: lash that pulls in | Frost: slows enemies, heals itself + town guards nearby (6 blocks) |
-| Earth | Earth Blast: thrown rock, knockback | Tremor: ground slam, stun then slow (4 blocks) |
-| Air | Air Swipe: fan of three light cuts | Air Blast: strong push away (8 blocks) |
+| Fire | Cinder Shot: burst, sets target alight | Searing Arc: cone of flame (5 blocks) |
+| Water | Tide Lash: lash that pulls in | Frostbloom: slows enemies, heals itself + town guards nearby (6 blocks) |
+| Earth | Stoneshot: thrown rock, knockback | Quake Stomp: ground slam, stun then slow (4 blocks) |
+| Air | Razor Wind: fan of three light cuts | Gale Shove: strong push away (8 blocks) |
 
-Once a second, with an enemy targeted: the close ability if the enemy is in its reach and it's off cooldown, otherwise
-the ranged one. Aimed abilities need line of sight. The husk still swings when it gets close.
+Once a second, with an enemy targeted: a trained path ability if it's ready and in range, otherwise the close ability
+if the enemy is in its reach and it's off cooldown, otherwise the ranged one. Aimed abilities need line of sight. The
+husk still swings when it gets close.
+
+## Training (Garrison 1.0.1+)
+
+Elementalists bring their own skill tree (`training-tree.yml` in the jar), used for any guard type with
+`behaviour: elementalist` unless you write one for that type in Garrison's `training.yml`. Open it with
+`/garrison training`. Each guard only uses the shared nodes and its own element's.
+
+| Tier | Nodes |
+|---|---|
+| 1 | Hardened (+2 health per rank), Focus (abilities back 8% sooner per rank) |
+| 2 | Reach (+10% range per rank), Composure (knockback resistance) |
+| 3 | Fire / Water / Earth / Air Attunement (+12% damage per rank for that element) |
+| 4-6 | **Three paths per element, choose one** |
+
+| Element | Mastery path | Path | Path |
+|---|---|---|---|
+| Fire | **Blue Flame**: +25%, flames burn blue | **Storm** (Chain Spark): a spark that jumps between up to 3 enemies | **Ash** (Ash Lance): a smoke beam that bursts on impact, hurting enemies around it |
+| Water | **Tide**: +25%, Tide Lash hits a second enemy | **Ice** (Ice Lance): a block of ice that hits hard and slows | **Bloom** (Rose Razor): a spinning rose flung like a blade |
+| Earth | **Stone**: +25%, Stoneshot throws a second stone | **Iron** (Returning Blade): a blade thrown out and back, cutting both ways | **Magma** (Molten Ring): a ring of molten drips that burns enemies inside |
+| Air | **Tempest**: +25%, Razor Wind gets two more blades | **Cyclone**: lifts an enemy high and drops it | **Vacuum** (Vacuum Snare): drags enemies together and slows them |
+
+Finishing the whole tree costs 29 points. On Garrison 1.0.0 the abilities all work, but there's nothing to train.
+
+Numbers for every ability, path and mastery are in `config.yml`. Sections were renamed in 1.1.0; old section names
+(fire-blast, tremor...) in an existing config are still read.
 
 ## Safety
 
